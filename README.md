@@ -2,7 +2,7 @@
 
 A theater management console where an admin uploads a partner CSV of showtimes and an LLM agent reconciles it with the stored schedule: it resolves messy titles and room names, the system proposes adds, updates, reschedules, archives and duplicates with a plain-language reason for each, and nothing is written until the admin reviews and confirms. It extends the Scope Labs backend assessment (a frontend-only Next.js app) with a real backend on Postgres and a real model in the product path.
 
-**Live:** https://theater-showtimes-ai-reconciliation.vercel.app
+**Live:** https://theater-showtimes-ai-reconciliation-flax.vercel.app
 
 ## Two-minute walkthrough
 
@@ -125,6 +125,7 @@ npm run dev                 # http://localhost:3000
 | `npm run test:integration` | Real Postgres (`TEST_DATABASE_URL`), a throwaway `ronnie_test_*` schema per file |
 | `npm run eval -- --model claude-sonnet-5-5 --effort medium --runs 3` | Real model against `evals/cases/` |
 | `npm run smoke -- --base <url>` | End-to-end over HTTP against a deployment (resets demo data) |
+| `npx tsx --conditions=react-server scripts/live-cases.ts --base <url>` | Every documented sample case over HTTP against a deployment (resets demo data) |
 | `npm run loadtest -- --rows 200000` | Timings for the list queries at scale |
 | `E2E_BASE_URL=<url> npx playwright test` | The reviewer walkthrough in a real browser (resets demo data) |
 | `npm run db:reset` | Restore the demo seed in `DB_SCHEMA` only |
@@ -142,5 +143,6 @@ Environment variables are documented in [.env.example](.env.example). On Vercel 
 
 ## How this was built
 
-<!-- TODO(Ronnie): review and edit this paragraph. -->
-I built this with an AI coding agent (Claude Code) under my direction. I wrote the build brief: the architecture, the data model and its constraints, the invariants, the agent's role and guardrails, and the test plan, based on the design positions I took in the live review. The agent implemented it, and I reviewed the code, the tests and the eval results.
+I built this with Claude Code as my coding agent. Before any code, I wrote a long build brief: the architecture, the data model and its constraints, what the agent is allowed to decide, and the test plan. Most of it comes from the design discussion I had with Itamar, including the points he pushed back on, like the movies and auditoriums tables and the locking.
+
+Claude Code wrote the code from that brief. I made the design calls, checked the results on the live app, and went through the tests and the eval numbers. Using an agent this way is how I normally work, so I wanted to be upfront about it.
