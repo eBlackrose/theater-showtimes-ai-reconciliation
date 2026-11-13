@@ -18,7 +18,16 @@ import type { MovieStatus, ShowtimeStatus } from "~/types/assessment";
 /** The part of the catalog one file needs: movies by key or id, and the rooms of its theaters. */
 export async function loadCatalog(
   db: Db,
-  input: { titleKeys: string[]; movieIds: string[]; theaterIds: string[] },
+  input: {
+    titleKeys: string[];
+    movieIds: string[];
+    theaterIds: string[];
+    /**
+     * At apply: movies this import created in an earlier theater's transaction still count
+     * as "new", so the plan (and its hash) for the next theater is what the admin approved.
+     */
+    createdByImportId?: string;
+  },
 ): Promise<CatalogSnapshot> {
   const { q } = db;
   const catalog: CatalogSnapshot = {
@@ -28,12 +37,16 @@ export async function loadCatalog(
     rooms: new Map(),
   };
 
-  const movies = await q<{ id: string; title: string; normalized_title: string }[]>`
-    select id, title, normalized_title from ${tbl(db, "movies")}
+  const movies = await q<
+    { id: string; title: string; normalized_title: string; created_by_import_id: string | null }[]
+  >`
+    select id, title, normalized_title, created_by_import_id from ${tbl(db, "movies")}
     where normalized_title = any(${input.titleKeys}::text[]) or id = any(${input.movieIds}::text[])`;
   for (const movie of movies) {
     catalog.movieTitles.set(movie.id, movie.title);
-    catalog.movieByKey.set(movie.normalized_title, movie.id);
+    if (!input.createdByImportId || movie.created_by_import_id !== input.createdByImportId) {
+      catalog.movieByKey.set(movie.normalized_title, movie.id);
+    }
   }
   const aliases = await q<{ movie_id: string; normalized_alias: string; title: string }[]>`
     select a.movie_id, a.normalized_alias, m.title

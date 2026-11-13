@@ -1,5 +1,5 @@
 import { parse } from "csv-parse/sync";
-import { cleanText } from "./normalize";
+import { cleanText, normalizeKey } from "./normalize";
 import type { CsvIssue, ParsedRow } from "./types";
 
 export const MAX_FILE_BYTES = 1_000_000;
@@ -161,10 +161,22 @@ export function parseCsv(
     const title = cell("title");
     if (!title) {
       errors.push({ row, field: "movie_title", message: "The movie title is empty." });
+    } else if (!normalizeKey(title)) {
+      errors.push({
+        row,
+        field: "movie_title",
+        message: `The movie title "${title}" has no letters or digits.`,
+      });
     }
     const auditorium = cell("auditorium");
     if (!auditorium) {
       errors.push({ row, field: "auditorium", message: "The auditorium is empty." });
+    } else if (!normalizeKey(auditorium)) {
+      errors.push({
+        row,
+        field: "auditorium",
+        message: `The auditorium "${auditorium}" has no letters or digits.`,
+      });
     }
 
     const instant = (field: "startTime" | "endTime" | "lastUpdated") => {

@@ -136,6 +136,13 @@ describe("parseCsv: strict on meaning", () => {
     expect(errorsOf(`${HEADER}\nDowntown Cinema 7,"Dune,Auditorium 1\n`)[0]?.message).toMatch(/not valid CSV/);
   });
 
+  it("rejects a title or room with no letters or digits", () => {
+    const errors = errorsOf(
+      `${HEADER}\nDowntown Cinema 7,???,---,2025-03-15T18:00:00Z,2025-03-15T20:00:00Z,,,,\n`,
+    );
+    expect(errors.map((e) => e.field)).toEqual(["movie_title", "auditorium"]);
+  });
+
   it("enforces the size and row limits", () => {
     const big = parse(`${HEADER}\n${`${GOOD}\n`.repeat(MAX_DATA_ROWS + 1)}`);
     expect(big).toMatchObject({ ok: false, code: "too_large" });

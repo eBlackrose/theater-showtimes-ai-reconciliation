@@ -482,7 +482,7 @@ export function ReviewView({
             >
               {busy === "discard" ? "Discarding..." : "Discard"}
             </button>
-            {hasFallbacks && (
+            {hasFallbacks && detail.status === "ready" && (
               <button
                 type="button"
                 onClick={onRetryAnalysis}

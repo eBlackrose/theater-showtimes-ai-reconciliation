@@ -267,6 +267,63 @@ describe("import lifecycle", () => {
     expect(asCasey.theaterSections).toHaveLength(3);
   });
 
+  it("a new movie shared by two theaters applies in one go, and is created once", async () => {
+    const header = "theater_name,movie_title,auditorium,start_time,end_time";
+    const content = [
+      header,
+      "Downtown Cinema 7,Challengers,Auditorium 4,2025-03-17T21:30:00Z,2025-03-17T23:41:00Z",
+      "Riverside Multiplex,Challengers,Auditorium A,2025-03-17T21:30:00Z,2025-03-17T23:41:00Z",
+    ].join("\n");
+    const created = await createImport(db, avery, { filename: "shared.csv", content, scopeTheaterId: null });
+    const llm = fakeLlm([
+      {
+        tools: [
+          {
+            name: "submit_resolutions",
+            input: {
+              resolutions: [
+                {
+                  kind: "movie",
+                  subjectKey: "challengers",
+                  theaterId: null,
+                  decision: "new",
+                  targetId: null,
+                  canonicalName: null,
+                  confidence: "high",
+                  explanation: "Not in the catalog.",
+                },
+              ],
+            },
+          },
+        ],
+      },
+      { text: "Challengers is new." },
+    ]);
+    await analyzeImport(db, avery, created.importId, { llm, dailyRunLimit: 100 });
+    const detail = await importDetail(db, avery, created.importId);
+    expect(detail.counts.add).toBe(2);
+    const result = await apply(avery, detail);
+    expect(result.status).toBe("applied");
+    expect(result.theaters.map((t) => t.status)).toEqual(["applied", "applied"]);
+    const movies = await db.q`select id from ${tbl(db, "movies")} where normalized_title = 'challengers'`;
+    expect(movies).toHaveLength(1);
+  });
+
+  it("without a model, a respelled room can still be mapped to an existing room", async () => {
+    const detail = await upload(avery, "new-drop.csv", null);
+    const aud1 = detail.resolutions.find((r) => r.subjectRaw === "Aud 1");
+    expect(aud1?.candidates.map((c) => c.name)).toContain("Auditorium 1");
+  });
+
+  it("resetting the demo data keeps the daily AI usage counter", async () => {
+    await upload(avery, "new-drop.csv", newDropRooms());
+    const [before] = await db.q`select runs from ${tbl(db, "llm_usage_daily")}`;
+    await resetDemo(db, db.schema);
+    const [after] = await db.q`select runs from ${tbl(db, "llm_usage_daily")}`;
+    expect(before?.runs).toBeGreaterThan(0);
+    expect(after).toEqual(before);
+  });
+
   it("returns 409 and a fresh plan when the schedule changed between review and apply", async () => {
     const detail = await upload(avery, "new-drop.csv", newDropRooms());
     // Someone archives a showtime the plan called "unchanged".

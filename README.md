@@ -74,7 +74,7 @@ More, including where the brief and reality differed: [docs/DECISIONS.md](docs/D
 | Titles repeated on every showtime | `movies` + `movie_aliases`; showtimes hold `movie_id`; search runs on movies |
 | Room names as free text | `auditoriums` + `auditorium_aliases` per theater; an unknown room is never created quietly, it is a flagged proposal |
 | Files that span theaters | Rows grouped by theater, access checked per row, one preview section and one transaction per theater, only theaters in the file can be archived from |
-| Two uploads at once | One advisory lock per theater taken in a fixed order, an atomic claim on the import, a schedule version per theater, and the plan hash check |
+| Two uploads at once | One advisory lock per theater taken in a fixed order, an atomic claim on the import, and the plan hash check inside the transaction. A schedule version per theater is bumped on every write and recorded with each plan; the hash is what is enforced |
 | The password in `.env.example` | This repo has placeholders only and a fresh history; the shared password should still be rotated |
 
 ## Assumptions
@@ -104,7 +104,7 @@ A false merge (a title or room matched to the wrong existing entry) is the error
 
 **Model choice.** The default is `claude-sonnet-5-5` at `medium` effort. On this set Haiku 5.5 at medium effort is just as accurate at about one fourteenth of the cost and similar latency, so it is a one-variable switch (`ANTHROPIC_MODEL`) when volume matters. I kept Sonnet as the default because 69 subjects cannot separate the two, a false merge costs far more than five cents, and most uploads never reach the model at all: a file whose spellings were confirmed before resolves from saved aliases with no AI call.
 
-Guardrails: strict tool schemas; every submitted resolution validated on the server (the subject must be on the worklist, the target must exist, a room must belong to that theater); 8 turns, 40 tool calls and 100 seconds per run; a daily cap on runs; file cells delimited and declared as data; model text rendered as plain text. If the model is unavailable, refuses, or runs out of budget, the import still reaches a usable proposal: what it did not resolve is marked "needs your decision" and **Retry AI analysis** is offered.
+Guardrails: strict tool schemas; every submitted resolution validated on the server (the subject must be on the worklist, the target must exist, a room must belong to that theater); 8 turns, 40 tool calls and a 100-second budget per run (checked between turns, with a 60-second timeout per request); a daily cap on runs; file cells delimited and declared as data; model text rendered as plain text. If the model is unavailable, refuses, or runs out of budget, the import still reaches a usable proposal: what it did not resolve is marked "needs your decision" and **Retry AI analysis** is offered.
 
 Trace: every stage, model turn (model, stop reason, tokens, milliseconds), tool call and accepted or rejected resolution is stored in `import_events` as it happens. The console reads that feed live and the import history shows it afterwards. The events map one-to-one onto spans in a tracing tool such as Arize Phoenix or OpenTelemetry.
 
@@ -126,7 +126,6 @@ npm run dev                 # http://localhost:3000
 | `npm run eval -- --model claude-sonnet-5-5 --effort medium --runs 3` | Real model against `evals/cases/` |
 | `npm run smoke -- --base <url>` | End-to-end over HTTP against a deployment (resets demo data) |
 | `npm run loadtest -- --rows 200000` | Timings for the list queries at scale |
-| `E2E_BASE_URL=<url> npx playwright test` | The reviewer walkthrough in a real browser (resets demo data) |
 | `E2E_BASE_URL=<url> npx playwright test` | The reviewer walkthrough in a real browser (resets demo data) |
 | `npm run db:reset` | Restore the demo seed in `DB_SCHEMA` only |
 

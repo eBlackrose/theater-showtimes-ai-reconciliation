@@ -51,13 +51,14 @@ export async function applyImport(
   const imp = await requireImport(db, actor, importId);
 
   // Claim atomically. A second click, or a second admin, gets a 409.
-  const claimed = await db.q`
+  const claimed = await db.q<Pick<ImportRow, "plan_hash" | "summary" | "warnings">[]>`
     update ${tbl(db, "imports")} set status = 'applying', apply_started_at = now()
     where id = ${importId}
       and (status in ('ready', 'partially_applied')
            or (status = 'applying' and apply_started_at < now() - ${STALE_APPLY}::interval))
-    returning id`;
-  if (claimed.length === 0) {
+    returning plan_hash, summary, warnings`;
+  const current = claimed[0];
+  if (!current) {
     throw conflict(
       imp.status === "applied"
         ? "This import was already applied."
@@ -73,15 +74,16 @@ export async function applyImport(
   let resolutions: Resolution[];
   let pending: Awaited<ReturnType<typeof loadImportTheaters>>;
   try {
-    if (body.planHash !== imp.plan_hash) {
+    if (body.planHash !== current.plan_hash) {
       throw new ApiError(409, "plan_changed", PLAN_CHANGED);
     }
-    if (imp.warnings.some((w) => w.requiresAck) && !body.acknowledgeWarnings) {
+    if (current.warnings.some((w) => w.requiresAck) && !body.acknowledgeWarnings) {
       throw badRequest("Confirm the warning about archived showtimes before applying.");
     }
-    if ((imp.summary.pending ?? 0) > 0) {
+    const waiting = current.summary.pending ?? 0;
+    if (waiting > 0) {
       throw badRequest(
-        `${imp.summary.pending} change${imp.summary.pending === 1 ? "" : "s"} still need a decision before this can be applied.`,
+        `${waiting} change${waiting === 1 ? "" : "s"} still need a decision before this can be applied.`,
       );
     }
     // Permissions are re-checked from the stored file, for whoever is applying now.
@@ -158,7 +160,7 @@ async function applyTheater(
   await lockTheater(tx, theaterId);
 
   // Everything below runs under the theater lock, on the transaction handle only.
-  const state = await loadPlanState(tx, file, resolutions, [theaterId]);
+  const state = await loadPlanState(tx, file, resolutions, [theaterId], imp.id);
   const decisions = await loadDecisions(tx, imp.id, theaterId);
   const plan: PlanResult = planTheater(file, state, resolutions, theaterId, decisions);
   if (plan.planHash !== expectedHash) throw new PlanChanged();
@@ -361,7 +363,11 @@ async function learnAliases(
   roomIds: Map<string, string>,
 ) {
   const { q } = tx;
-  const used = new Set(accepted.flatMap((a) => a.payload.resolutionKeys));
+  const used = new Set(
+    accepted
+      .filter((a) => a.action !== "duplicate")
+      .flatMap((a) => a.payload.resolutionKeys),
+  );
   const movieAliases: { target: string; alias: string; key: string; source: string }[] = [];
   const roomAliases: typeof movieAliases = [];
   for (const r of resolutions) {

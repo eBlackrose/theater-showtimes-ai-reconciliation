@@ -115,6 +115,7 @@ export async function loadPlanState(
   file: ImportFile,
   resolutions: Resolution[],
   theaterIds: string[] = file.theaterIds,
+  createdByImportId?: string,
 ): Promise<PlanState> {
   const schedules = new Map<string, ExistingShowtime[]>();
   const titleKeys = new Set<string>();
@@ -136,6 +137,7 @@ export async function loadPlanState(
     titleKeys: [...titleKeys],
     movieIds: [...movieIds],
     theaterIds,
+    createdByImportId,
   });
   const rows = await db.q<{ id: string; schedule_version: string }[]>`
     select id, schedule_version from ${tbl(db, "theaters")}

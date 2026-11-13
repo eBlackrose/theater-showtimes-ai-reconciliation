@@ -15,7 +15,6 @@ export const seedAuditoriumId = (theaterId: string, name: string) =>
 
 const DATA_TABLES = [
   "audit_log",
-  "llm_usage_daily",
   "import_events",
   "import_actions",
   "import_resolutions",
@@ -121,7 +120,8 @@ async function seedInto(tx: Db): Promise<void> {
 }
 
 /**
- * Empty every table of the schema and re-seed. Refuses to run on `public` or on any schema
+ * Empty every data table of the schema and re-seed. The daily AI usage counter is kept, so
+ * resetting the demo cannot be used to get around the cap on model calls. Refuses to run on `public` or on any schema
  * other than the one the caller says it expects, because this database is shared.
  */
 export async function resetDemo(db: Db, expectedSchema: string): Promise<void> {

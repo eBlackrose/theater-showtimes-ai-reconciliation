@@ -319,7 +319,11 @@ export class Analysis implements AgentSession {
         confidence: "low",
         explanation: `${reason} "${raw}" is treated as a new ${subject.kind === "movie" ? "movie" : "room"} until you decide.`,
         candidates:
-          subject.kind === "movie" ? (this.movieCandidates.get(subject.subjectKey) ?? []) : [],
+          subject.kind === "movie"
+            ? (this.movieCandidates.get(subject.subjectKey) ?? [])
+            : [...(this.state.catalog.rooms.get(subject.theaterId ?? "")?.byId ?? [])].map(
+                ([id, name]) => ({ id, name }),
+              ),
       });
     }
     return unresolved.length;
