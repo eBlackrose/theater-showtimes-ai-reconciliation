@@ -2,7 +2,7 @@
 
 A theater management console where an admin uploads a partner CSV of showtimes and an LLM agent reconciles it with the stored schedule: it resolves messy titles and room names, the system proposes adds, updates, reschedules, archives and duplicates with a plain-language reason for each, and nothing is written until the admin reviews and confirms. It extends the Scope Labs backend assessment (a frontend-only Next.js app) with a real backend on Postgres and a real model in the product path.
 
-**Live:** <!-- TODO(Ronnie): add the Vercel URL after the first deploy -->
+**Live:** https://theater-showtimes-ai-reconciliation.vercel.app
 
 ## Two-minute walkthrough
 
