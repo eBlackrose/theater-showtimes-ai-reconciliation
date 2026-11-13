@@ -1,0 +1,7 @@
+theater_name,movie_title,auditorium,start_time,end_time,language,format,rating,last_updated
+Downtown Cinema 7,Inside Out 2,Auditorium 2,2025-03-17T18:00:00Z,2025-03-17T19:50:00Z,EN,3D,PG,2025-03-16T09:00:00Z
+Downtown Cinema 7,Dune: Part Two,Auditorium 1,2025-03-17T20:30:00Z,2025-03-17T23:16:00Z,EN,IMAX,PG-13,2025-03-16T09:00:00Z
+Riverside Multiplex,The Fall Guy,Auditorium A,2025-03-17T19:00:00Z,2025-03-17T21:06:00Z,EN,2D,PG-13,2025-03-16T09:00:00Z
+Riverside Multiplex,Civil War,Auditorium C,2025-03-17T21:30:00Z,2025-03-17T23:25:00Z,EN,IMAX,R,2025-03-16T09:00:00Z
+Uptown Arts Theater,Perfect Days,Screen 1,2025-03-17T18:30:00Z,2025-03-17T20:25:00Z,JA,2D,PG,2025-03-16T09:00:00Z
+Lakeside Drive-In,Wonka,Screen 1,2025-03-17T20:00:00Z,2025-03-17T21:56:00Z,EN,2D,PG,2025-03-16T09:00:00Z

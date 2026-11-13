@@ -1,0 +1,5 @@
+theater_name,movie_title,auditorium,start_time,end_time,language,format,rating,last_updated
+Downtown Cinema 7,Inside Out 2,Auditorium 2,2025-03-15T17:30:00Z,2025-03-15T19:20:00Z,EN,3D,PG,2025-03-15T09:00:00Z
+Downtown Cinema 7,Dune: Part Two,Auditorium 1,15/03/2025 6pm,2025-03-15T22:46:00Z,EN,IMAX,PG-13,2025-03-15T09:00:00Z
+Downtown Cinema 7,Wonka,Auditorium 3,2025-03-15T16:00:00Z,2025-03-15T14:00:00Z,EN,2D,PG,2025-03-15T09:00:00Z
+Downtown Cinema 7,,Auditorium 4,2025-03-15T21:00:00Z,2025-03-16T00:00:00Z,EN,IMAX,R,2025-03-15T09:00:00Z
