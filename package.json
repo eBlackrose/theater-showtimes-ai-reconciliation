@@ -1,5 +1,5 @@
 {
-  "name": "scope-movie-assessment",
+  "name": "theater-showtimes-ai-reconciliation",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,20 +7,30 @@
     "build": "next build",
     "check": "next lint && tsc --noEmit",
     "dev": "next dev --turbo",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
-    "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
+    "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "preview": "next build && next start",
     "start": "next start",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "db:migrate": "tsx --conditions=react-server scripts/migrate.ts",
+    "db:seed": "tsx --conditions=react-server scripts/seed.ts",
+    "db:reset": "tsx --conditions=react-server scripts/reset-demo.ts",
+    "smoke": "tsx --conditions=react-server scripts/smoke.ts",
+    "eval": "tsx --conditions=react-server scripts/eval.ts",
+    "loadtest": "tsx --conditions=react-server scripts/loadtest.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
     "@t3-oss/env-nextjs": "^0.12.0",
-    "@supabase/supabase-js": "^2.49.1",
-    "next": "^15.2.3",
+    "csv-parse": "^7.0.3",
+    "luxon": "^3.7.2",
+    "next": "^15.5.29",
+    "postgres": "^4.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
@@ -29,20 +39,26 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.0.15",
-    "@types/node": "^20.14.10",
+    "@types/luxon": "^3.7.6",
+    "@types/node": "^22.20.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "dotenv": "^18.0.10",
     "eslint": "^9.23.0",
-    "eslint-config-next": "^15.2.3",
+    "eslint-config-next": "^15.5.29",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.0.15",
+    "tsx": "^4.23.15",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.27.0"
+    "typescript-eslint": "^8.27.0",
+    "vitest": "^5.1.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.40.0"
   },
-  "packageManager": "npm@10.8.2"
+  "engines": {
+    "node": ">=20"
+  }
 }
