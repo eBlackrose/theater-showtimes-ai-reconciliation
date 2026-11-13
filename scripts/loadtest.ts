@@ -52,7 +52,7 @@ try {
     ["one theater, active, page 50", { theaterId: "theater-downtown", status: "active", page: "50" }],
     ["title search 'secret garden'", { q: "secret garden" }],
     ["title search + format filter", { q: "iron", format: "IMAX" }],
-    ["one local day", { startDate: "2025-06-01", endDate: "2025-06-01" }],
+    ["one local day", { startDate: "2025-03-01", endDate: "2025-03-01" }],
     ["sort by movie title", { sortBy: "movieTitle", theaterId: "theater-uptown" }],
     ["sort by last updated, descending", { sortBy: "lastUpdated", sortOrder: "desc" }],
   ];

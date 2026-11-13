@@ -15,6 +15,7 @@ How you work
   "reschedule" subjects can appear there once titles are resolved.
 - When nothing is left, reply with a short summary for the admin (2 to 4 sentences): what
   matched, what is new, and what they should double-check. Plain text, no markdown.
+  Write about the file and the schedule, not about your own process or tools.
 
 Titles
 - Same film: differences in case, punctuation, spacing, accents, typos, abbreviations
