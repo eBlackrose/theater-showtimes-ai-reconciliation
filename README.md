@@ -1,78 +1,132 @@
-# Theater Showtimes Backend Assessment
+# Theater Showtimes Manager: AI CSV reconciliation
 
-This repository contains a frontend-only Next.js application with static JSON data. The backend logic has been intentionally removed so candidates can implement it as part of the assessment. The UI is wired to mock data and stubbed actions to illustrate the expected behaviors.
+A theater management console where an admin uploads a partner CSV of showtimes and an LLM agent reconciles it with the stored schedule: it resolves messy titles and room names, the system proposes adds, updates, reschedules, archives and duplicates with a plain-language reason for each, and nothing is written until the admin reviews and confirms. It extends the Scope Labs backend assessment (a frontend-only Next.js app) with a real backend on Postgres and a real model in the product path.
 
-## Quick Start
+**Live:** DEPLOY_URL_PLACEHOLDER
 
-1. Install dependencies
+## Two-minute walkthrough
+
+1. Pick **Avery Admin** and theater **Downtown Cinema 7**. Open **Try a sample → new-drop.csv**. Watch the agent work (model, turns, tool calls), read the proposal, press **Apply**.
+2. Upload `new-drop.csv` again. This time no AI call is made and nothing changes: the room names the agent resolved were saved as aliases when you confirmed them.
+3. Try `ai-messy-drop.csv`: typos ("Spiderman Homecomming"), roman numerals, an edition tag, a film that is not in the catalog, two spellings of one showtime, and a showing that moved 15 minutes.
+4. Switch the theater to **All accessible theaters** and try `multi-theater-drop.csv` as Avery, then as **Casey Operator**. Rows for theaters you cannot manage are listed as skipped and never written.
+5. `invalid-drop.csv` is rejected with every row error. `injection-drop.csv` has a title cell that tells the model to archive everything; it becomes a flagged "new movie" proposal and nothing else happens.
+6. Open **Import history** to see past imports with every decision, result and the agent's trace. Switch to **Riley Viewer** for the read-only view.
+7. **Reset demo data** puts everything back.
+
+Expected results for each sample are in [sample-data/README.md](sample-data/README.md).
+
+## How it works
+
+**The model proposes meaning. Code decides everything else.**
+
+The agent only answers semantic questions: is this title the same film as that one, is "Aud 1" the same room as "Auditorium 1", did this showing move or is it a new one. It answers with a decision, a confidence and a short explanation, through one tool whose input the server validates. Its other tools are read-only lookups. Parsing, validation, permissions, exact matching, turning resolutions into actions, every invariant and every write are deterministic code.
+
+```
+Browser (console UI)
+   |  X-User-Id header, same-origin /api/*
+   v
+Route handlers (thin: zod parse, actor, error mapping)
+   |
+   v
+imports service ------------------------------------------------------+
+   | 1 create     parse + validate CSV, store raw file, scope rows     |
+   | 2 analyze    a) deterministic resolve (exact, saved aliases)      |
+   |              b) AGENT resolves what is left (tools, guardrails)   |--> import_events (trace)
+   |              c) derivePlan(rows, resolutions, schedule) -> actions|
+   | 3 review     accept / reject actions, override resolutions        |
+   | 4 apply      per theater: tx + advisory lock + re-derive + hash   |
+   |              check + set-based writes + learn aliases             |
+   +-------------------------------------------------------------------+
+   |
+   v
+Postgres (Supabase, one schema)                    Anthropic API (server-side only)
+```
+
+Because actions are a pure function of *(file rows, resolutions, current schedule)*:
+
+- what the admin approves is exactly what is applied;
+- apply can recompute the plan inside its transaction and refuse if it differs from what the admin saw;
+- invariants hold by construction (the model cannot produce an action, only a resolution);
+- a wrong or manipulated model answer can only become a visible, reviewable proposal, never a silent write.
+
+Why not just a similarity threshold? Trigram similarity of `dune pt 2` is 0.57 to "Dune: Part Two" and 0.50 to "Dune". No threshold separates those safely. Context does: the stored 1:00 PM showing in the same room.
+
+## Key decisions and trade-offs
+
+- **Next.js route handlers, not the FastAPI scaffold.** The deliverable has to run on Vercel; one app, one deploy, one language. The unused `backend/` folder is removed.
+- **`movies` and `auditoriums` tables with saved aliases.** One clean title per film and one name per room; showtimes reference them by id. The partner's spelling never overwrites the clean name: it becomes an alias. Every agent decision an admin confirms is saved, so the next file matches with no model call.
+- **Identity is (theater, movie, start time), enforced by a unique constraint**, in any status. A showtime that comes back after being archived is restored with its id and movie status, not duplicated. The auditorium is not part of identity, so a room change is an update.
+- **A conservative normalizer plus the agent.** Rules only cover what is always safe (case, accents, punctuation, spacing, "Part Two" = "Part 2"). Typos, roman numerals, abbreviations and edition tags go to the agent, because a wrong rule merges two films silently.
+- **The plan is derived, not generated.** `derivePlan` is a pure function; the agent's output is only an input to it.
+- **Apply does not trust the preview.** Per theater, in id order, each in its own transaction: `pg_advisory_xact_lock`, re-derive from the stored file, resolutions and decisions, compare the SHA-256 plan hash, then write with set-based statements. A mismatch returns 409 and a fresh proposal.
+- **The covered window.** A file can only archive showtimes on the theater-local days it covers. A control on the review screen switches to "treat the file as the full schedule".
+- **Polling instead of streaming.** Upload returns an id, analyze does the long work, the browser polls the event feed. Plain JSON, easy to test, survives a dropped connection, and a failed analysis can be retried from the stored file.
+- **Plain SQL with `postgres.js`, no ORM.** The constraints, upserts, locks and indexes are the interesting part. Writes pass one JSON or array parameter, never one bind per value, so 70,000 archives are one statement.
+- **Search at scale runs in SQL**: contains-search on the small `movies` table with trigram indexes, whitelisted sort columns, always paged (max 100).
+
+More, including where the brief and reality differed: [docs/DECISIONS.md](docs/DECISIONS.md).
+
+## Follow-ups from the live review
+
+| Point raised | What was built |
+|---|---|
+| Titles repeated on every showtime | `movies` + `movie_aliases`; showtimes hold `movie_id`; search runs on movies |
+| Room names as free text | `auditoriums` + `auditorium_aliases` per theater; an unknown room is never created quietly, it is a flagged proposal |
+| Files that span theaters | Rows grouped by theater, access checked per row, one preview section and one transaction per theater, only theaters in the file can be archived from |
+| Two uploads at once | One advisory lock per theater taken in a fixed order, an atomic claim on the import, a schedule version per theater, and the plan hash check |
+| The password in `.env.example` | This repo has placeholders only and a fresh history; the shared password should still be rotated |
+
+## Assumptions
+
+- **A CSV covers its dates, not the whole schedule.** Only showtimes on the days in the file can be archived. Switchable per import.
+- **Movie status belongs to the showtime**, not the movie. The base data has two showings of one film in one theater with different statuses, and a status on the movie would let one theater's admin change what another theater sees. Imports never write it.
+- **"Limited data" for non-admins** means: rows only for their theaters, read-only, and no access to imports, agent traces or admin routes.
+- **Identity is mocked with an `X-User-Id` header** (the assignment says no login). Role and theater scope are always read from the database; `getActor` is the one function to replace.
+- **Unknown theaters are skipped**, with a "did you mean" hint, never created.
+- **A spelling variant is "matched", not "updated".** The base mock showed three updates for `new-drop.csv` because it counted "Aud 1" and "Spider Man - Homecoming" as changes. Here they are the same room and film with no data change.
+- **`inactive` is a manual hold.** An import can update a held showtime but never switches it back on.
+
+## AI quality
+
+EVAL_SECTION_PLACEHOLDER
+
+Guardrails: strict tool schemas; every submitted resolution validated on the server (the subject must be on the worklist, the target must exist, a room must belong to that theater); 8 turns, 40 tool calls and 100 seconds per run; a daily cap on runs; file cells delimited and declared as data; model text rendered as plain text. If the model is unavailable, refuses, or runs out of budget, the import still reaches a usable proposal: what it did not resolve is marked "needs your decision" and **Retry AI analysis** is offered.
+
+Trace: every stage, model turn (model, stop reason, tokens, milliseconds), tool call and accepted or rejected resolution is stored in `import_events` as it happens. The console reads that feed live and the import history shows it afterwards. The events map one-to-one onto spans in a tracing tool such as Arize Phoenix or OpenTelemetry.
+
+## Setup
 
 ```bash
 npm install
+cp .env.example .env        # fill in DATABASE_URL, MIGRATION_DATABASE_URL, ANTHROPIC_API_KEY
+npm run db:migrate          # creates the schema named by DB_SCHEMA; safe to re-run
+npm run db:seed             # demo theaters, users, catalog and showtimes; safe to re-run
+npm run dev                 # http://localhost:3000
 ```
 
-2. Create a `.env` file
+| Command | What it does |
+|---|---|
+| `npm run check` | ESLint and TypeScript |
+| `npm test` | Unit tests and agent tests with a scripted model. No network. |
+| `npm run test:integration` | Real Postgres (`TEST_DATABASE_URL`), a throwaway `ronnie_test_*` schema per file |
+| `npm run eval -- --model claude-sonnet-5-5 --effort medium --runs 3` | Real model against `evals/cases/` |
+| `npm run smoke -- --base <url>` | End-to-end over HTTP against a deployment (resets demo data) |
+| `npm run loadtest -- --rows 200000` | Timings for the list queries at scale |
+| `npm run db:reset` | Restore the demo seed in `DB_SCHEMA` only |
 
-```bash
-cp .env.example .env
-```
+Environment variables are documented in [.env.example](.env.example). On Vercel set `DATABASE_URL` (transaction pooler, port 6543), `DB_SCHEMA`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `AGENT_EFFORT`, `AI_DAILY_RUN_LIMIT` and `DEMO_RESET_ENABLED` before the first deploy. Without `ANTHROPIC_API_KEY` the app runs in rule-based mode and says so.
 
-3. Add your database connection string
+## Limits and what I would do next
 
-- `DATABASE_URL`
+- **Very large files.** Uploads are capped at 1 MB and 5,000 rows and analyzed in the request. The next step is to stream the file into a staging table, diff it in SQL, and run it as a background job with a status.
+- **Paging** is offset-based with an exact count. At millions of rows: keyset paging, estimated counts, cached filter values.
+- **Real auth** behind `getActor`, and rate limiting per user rather than one daily cap.
+- **Export the trace** to a tracing tool instead of only showing it in the console.
+- **A rename flow for rooms and movies**, and a way to review or remove a saved alias.
+- **The shared database** is reachable by anyone with the base repo's credential. Everything here lives in one schema and is scripted, so moving to a private project is a new `DATABASE_URL` plus migrate and seed.
 
-4. Run the dev server
+## How this was built
 
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-## FastAPI Scaffold
-
-A minimal FastAPI app lives in `backend/app/main.py`.
-
-Run it locally:
-
-```bash
-cd backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
-
-Then visit `http://localhost:8000/health`.
-
-## What’s in the Frontend
-
-- Static data lives in `src/data/assessment-data.ts`.
-- Users are mocked client-side with a selector in the UI (admin vs non-admin).
-- CSV upload, preview, and schedule mutation buttons are intentionally mocked.
-
-## Backend Requirements (Implement These)
-
-Build the backend for a website to ingest a partner CSV and reconcile it against the current schedule for a single theater that currently has hard coded JSON data.
-
-The backend must support:
-
-- Admin and non-admin views
-  - Admin has full read/write access
-  - Non-admin has read access to limited data
-  - All users belong to some, none, or all theaters
-  - Users can only see movies for theaters they belong to
-  - Admin can update a movie status field that non-admins cannot update
-- A database schema based on the given hardcoded JSON data
-- Search at scale (hundreds of thousands of movies)
-  - Search by movie name
-  - Reasonable filters for other columns
-  - Sort by reasonable columns
-- CSV data cleaning on upload
-  - At most one active showtime per unique movie + start time per theater
-  - Minor differences (title spelling, auditorium rename) should update the same showtime
-  - Missing showtimes in a new drop should be archived
-  - Schedule must be persisted in the database
-
-## Notes
-
-- The frontend currently shows a callout indicating mock behavior. Replace mock logic with real API calls once the backend is implemented.
+<!-- TODO(Ronnie): review and edit this paragraph. -->
+I built this with an AI coding agent (Claude Code) under my direction. I wrote the build brief: the architecture, the data model and its constraints, the invariants, the agent's role and guardrails, and the test plan, based on the design positions I took in the live review. The agent implemented it, and I reviewed the code, the tests and the eval results.

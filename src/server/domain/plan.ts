@@ -586,6 +586,7 @@ function buildWarnings(
       end: p.endTime,
     });
   for (const showtime of input.schedule) {
+    if (!inWindow(showtime.startTime, window)) continue;
     const action = replaced.get(showtime.id);
     if (action?.action === "archive") continue;
     if (action && action.action !== "unchanged") {
@@ -607,12 +608,12 @@ function buildWarnings(
   const overlaps: string[] = [];
   let previous: (typeof live)[number] | undefined;
   for (const current of live) {
-    if (previous && previous.room === current.room && previous.end > current.start) {
+    if (previous?.room === current.room && previous.end > current.start) {
       overlaps.push(
         `${current.roomName}: "${previous.title}" ends ${at(previous.end)}, "${current.title}" starts ${at(current.start)}`,
       );
     }
-    if (!previous || previous.room !== current.room || current.end > previous.end) {
+    if (previous?.room !== current.room || current.end > previous.end) {
       previous = current;
     }
   }

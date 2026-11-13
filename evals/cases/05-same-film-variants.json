@@ -1,0 +1,268 @@
+{
+  "name": "05-same-film-variants",
+  "description": "Moved articles, abbreviations, edition tags, typos, years, '&' versus 'and'.",
+  "user": "user-admin-avery",
+  "scopeTheaterId": "theater-downtown",
+  "rows": [
+    [
+      "Downtown Cinema 7",
+      "Batman, The",
+      "Auditorium 1",
+      "2025-03-21T16:00:00Z",
+      "2025-03-21T17:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Wild Robot, The (Dubbed)",
+      "Auditorium 2",
+      "2025-03-21T16:20:00Z",
+      "2025-03-21T18:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Top Gun Maverick - IMAX",
+      "Auditorium 3",
+      "2025-03-21T16:40:00Z",
+      "2025-03-21T18:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "M:I Dead Reckoning Pt. 1",
+      "Auditorium 4",
+      "2025-03-21T17:00:00Z",
+      "2025-03-21T18:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Killers of the Flower Moon (2023)",
+      "Auditorium 1",
+      "2025-03-21T17:20:00Z",
+      "2025-03-21T19:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Seven",
+      "Auditorium 2",
+      "2025-03-21T17:40:00Z",
+      "2025-03-21T19:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Furiosa",
+      "Auditorium 3",
+      "2025-03-21T18:00:00Z",
+      "2025-03-21T19:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Godzilla -1.0",
+      "Auditorium 4",
+      "2025-03-21T18:20:00Z",
+      "2025-03-21T20:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Poor Thngs",
+      "Auditorium 1",
+      "2025-03-21T18:40:00Z",
+      "2025-03-21T20:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Barbie (Sing-Along)",
+      "Auditorium 2",
+      "2025-03-21T19:00:00Z",
+      "2025-03-21T20:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Zone of Interest",
+      "Auditorium 3",
+      "2025-03-21T19:20:00Z",
+      "2025-03-21T21:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Deadpool and Wolverine",
+      "Auditorium 4",
+      "2025-03-21T19:40:00Z",
+      "2025-03-21T21:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Spider-Man: Across the Spiderverse",
+      "Auditorium 1",
+      "2025-03-21T20:00:00Z",
+      "2025-03-21T21:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Godzilla x Kong",
+      "Auditorium 2",
+      "2025-03-21T20:20:00Z",
+      "2025-03-21T22:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Mad Max Fury Rd",
+      "Auditorium 3",
+      "2025-03-21T20:40:00Z",
+      "2025-03-21T22:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Oppenhiemer",
+      "Auditorium 4",
+      "2025-03-21T21:00:00Z",
+      "2025-03-21T22:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ]
+  ],
+  "expect": {
+    "resolutions": [
+      {
+        "kind": "movie",
+        "raw": "Batman, The",
+        "outcome": "existing",
+        "target": "The Batman"
+      },
+      {
+        "kind": "movie",
+        "raw": "Wild Robot, The (Dubbed)",
+        "outcome": "existing",
+        "target": "The Wild Robot"
+      },
+      {
+        "kind": "movie",
+        "raw": "Top Gun Maverick - IMAX",
+        "outcome": "existing",
+        "target": "Top Gun: Maverick"
+      },
+      {
+        "kind": "movie",
+        "raw": "M:I Dead Reckoning Pt. 1",
+        "outcome": "existing",
+        "target": "Mission: Impossible – Dead Reckoning Part One"
+      },
+      {
+        "kind": "movie",
+        "raw": "Killers of the Flower Moon (2023)",
+        "outcome": "existing",
+        "target": "Killers of the Flower Moon"
+      },
+      {
+        "kind": "movie",
+        "raw": "Seven",
+        "outcome": "existing",
+        "target": "Se7en"
+      },
+      {
+        "kind": "movie",
+        "raw": "Furiosa",
+        "outcome": "existing",
+        "target": "Furiosa: A Mad Max Saga"
+      },
+      {
+        "kind": "movie",
+        "raw": "Godzilla -1.0",
+        "outcome": "existing",
+        "target": "Godzilla Minus One"
+      },
+      {
+        "kind": "movie",
+        "raw": "Poor Thngs",
+        "outcome": "existing",
+        "target": "Poor Things"
+      },
+      {
+        "kind": "movie",
+        "raw": "Barbie (Sing-Along)",
+        "outcome": "existing",
+        "target": "Barbie"
+      },
+      {
+        "kind": "movie",
+        "raw": "Zone of Interest",
+        "outcome": "existing",
+        "target": "The Zone of Interest"
+      },
+      {
+        "kind": "movie",
+        "raw": "Deadpool and Wolverine",
+        "outcome": "existing",
+        "target": "Deadpool & Wolverine"
+      },
+      {
+        "kind": "movie",
+        "raw": "Spider-Man: Across the Spiderverse",
+        "outcome": "existing",
+        "target": "Spider-Man: Across the Spider-Verse"
+      },
+      {
+        "kind": "movie",
+        "raw": "Godzilla x Kong",
+        "outcome": "existing",
+        "target": "Godzilla x Kong: The New Empire"
+      },
+      {
+        "kind": "movie",
+        "raw": "Mad Max Fury Rd",
+        "outcome": "existing",
+        "target": "Mad Max: Fury Road"
+      },
+      {
+        "kind": "movie",
+        "raw": "Oppenhiemer",
+        "outcome": "existing",
+        "target": "Oppenheimer"
+      }
+    ]
+  }
+}

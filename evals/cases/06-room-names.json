@@ -1,0 +1,205 @@
+{
+  "name": "06-room-names",
+  "description": "Room renames across three theaters: number words, abbreviations, other room words, equipment tags, rooms that do not exist.",
+  "user": "user-admin-casey",
+  "scopeTheaterId": null,
+  "rows": [
+    [
+      "Uptown Arts Theater",
+      "Perfect Days",
+      "Screen One",
+      "2025-03-20T16:00:00Z",
+      "2025-03-20T17:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "Anatomy of a Fall",
+      "Scr. 2",
+      "2025-03-20T16:20:00Z",
+      "2025-03-20T18:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "The Boy and the Heron",
+      "Screen 3",
+      "2025-03-20T16:40:00Z",
+      "2025-03-20T18:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "Past Lives",
+      "Auditorium 2",
+      "2025-03-20T17:00:00Z",
+      "2025-03-20T18:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Riverside Multiplex",
+      "The Fall Guy",
+      "Aud B",
+      "2025-03-20T16:00:00Z",
+      "2025-03-20T17:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Riverside Multiplex",
+      "Civil War",
+      "Auditorium F",
+      "2025-03-20T16:20:00Z",
+      "2025-03-20T18:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Riverside Multiplex",
+      "Past Lives",
+      "Hall C",
+      "2025-03-20T16:40:00Z",
+      "2025-03-20T18:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Riverside Multiplex",
+      "The Holdovers",
+      "Auditorium D (Dolby)",
+      "2025-03-20T17:00:00Z",
+      "2025-03-20T18:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Riverside Multiplex",
+      "Ghostbusters: Frozen Empire",
+      "Aud. E - Recliners",
+      "2025-03-20T17:20:00Z",
+      "2025-03-20T19:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Wonka",
+      "Auditorium Four",
+      "2025-03-20T16:00:00Z",
+      "2025-03-20T17:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Oppenheimer",
+      "Aud 6",
+      "2025-03-20T16:20:00Z",
+      "2025-03-20T18:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Downtown Cinema 7",
+      "Dune",
+      "Auditorium III",
+      "2025-03-20T16:40:00Z",
+      "2025-03-20T18:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ]
+  ],
+  "expect": {
+    "resolutions": [
+      {
+        "kind": "auditorium",
+        "raw": "Screen One",
+        "outcome": "existing",
+        "target": "Screen 1"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Scr. 2",
+        "outcome": "existing",
+        "target": "Screen 2"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Screen 3",
+        "outcome": "new"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium 2",
+        "outcome": "existing",
+        "target": "Screen 2"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Aud B",
+        "outcome": "existing",
+        "target": "Auditorium B"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium F",
+        "outcome": "new"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Hall C",
+        "outcome": "existing",
+        "target": "Auditorium C"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium D (Dolby)",
+        "outcome": "existing",
+        "target": "Auditorium D"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Aud. E - Recliners",
+        "outcome": "existing",
+        "target": "Auditorium E"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium Four",
+        "outcome": "existing",
+        "target": "Auditorium 4"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Aud 6",
+        "outcome": "new"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium III",
+        "outcome": "existing",
+        "target": "Auditorium 3"
+      }
+    ],
+    "counts": {
+      "add": 12,
+      "archive": 0
+    }
+  }
+}

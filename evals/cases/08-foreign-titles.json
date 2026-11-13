@@ -1,0 +1,124 @@
+{
+  "name": "08-foreign-titles",
+  "description": "Original-language and translated titles, subtitles tags, a non-Latin script.",
+  "user": "user-admin-casey",
+  "scopeTheaterId": "theater-uptown",
+  "rows": [
+    [
+      "Uptown Arts Theater",
+      "Anatomie d'une chute",
+      "Screen 1",
+      "2025-03-22T16:00:00Z",
+      "2025-03-22T17:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "Le Fabuleux Destin d'Amélie Poulain",
+      "Screen 2",
+      "2025-03-22T16:20:00Z",
+      "2025-03-22T18:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "君たちはどう生きるか",
+      "Screen 1",
+      "2025-03-22T16:40:00Z",
+      "2025-03-22T18:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "PERFECT DAYS (OV m. UT)",
+      "Screen 2",
+      "2025-03-22T17:00:00Z",
+      "2025-03-22T18:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "Past Lives (Korean w/ subs)",
+      "Screen 1",
+      "2025-03-22T17:20:00Z",
+      "2025-03-22T19:10:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "El niño y la garza",
+      "Screen 2",
+      "2025-03-22T17:40:00Z",
+      "2025-03-22T19:30:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Uptown Arts Theater",
+      "La zona de interés",
+      "Screen 1",
+      "2025-03-22T18:00:00Z",
+      "2025-03-22T19:50:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ]
+  ],
+  "expect": {
+    "resolutions": [
+      {
+        "kind": "movie",
+        "raw": "Anatomie d'une chute",
+        "outcome": "existing",
+        "target": "Anatomy of a Fall"
+      },
+      {
+        "kind": "movie",
+        "raw": "Le Fabuleux Destin d'Amélie Poulain",
+        "outcome": "existing",
+        "target": "Amélie"
+      },
+      {
+        "kind": "movie",
+        "raw": "君たちはどう生きるか",
+        "outcome": "existing",
+        "target": "The Boy and the Heron"
+      },
+      {
+        "kind": "movie",
+        "raw": "PERFECT DAYS (OV m. UT)",
+        "outcome": "existing",
+        "target": "Perfect Days"
+      },
+      {
+        "kind": "movie",
+        "raw": "Past Lives (Korean w/ subs)",
+        "outcome": "existing",
+        "target": "Past Lives"
+      },
+      {
+        "kind": "movie",
+        "raw": "El niño y la garza",
+        "outcome": "existing",
+        "target": "The Boy and the Heron"
+      },
+      {
+        "kind": "movie",
+        "raw": "La zona de interés",
+        "outcome": "existing",
+        "target": "The Zone of Interest"
+      }
+    ]
+  }
+}

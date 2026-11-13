@@ -1,0 +1,63 @@
+{
+  "name": "07-reschedule",
+  "description": "A full day for Riverside where one showing starts 15 minutes later in the same room.",
+  "user": "user-admin-avery",
+  "scopeTheaterId": "theater-riverside",
+  "rows": [
+    [
+      "Riverside Multiplex",
+      "The Fall Guy",
+      "Auditorium A",
+      "2025-03-15T19:30:00Z",
+      "2025-03-15T21:36:00Z",
+      "EN",
+      "2D",
+      "PG-13"
+    ],
+    [
+      "Riverside Multiplex",
+      "Ghostbusters: Frozen Empire",
+      "Auditorium B",
+      "2025-03-15T18:00:00Z",
+      "2025-03-15T20:05:00Z",
+      "EN",
+      "3D",
+      "PG-13"
+    ],
+    [
+      "Riverside Multiplex",
+      "Civil War",
+      "Auditorium C",
+      "2025-03-15T20:30:00Z",
+      "2025-03-15T22:25:00Z",
+      "EN",
+      "IMAX",
+      "R"
+    ],
+    [
+      "Riverside Multiplex",
+      "Past Lives",
+      "Auditorium D",
+      "2025-03-16T01:00:00Z",
+      "2025-03-16T02:45:00Z",
+      "KO",
+      "2D",
+      "PG-13"
+    ]
+  ],
+  "expect": {
+    "resolutions": [
+      {
+        "kind": "reschedule",
+        "raw": "st-rv-001",
+        "outcome": "moved"
+      }
+    ],
+    "counts": {
+      "reschedule": 1,
+      "unchanged": 3,
+      "archive": 0,
+      "add": 0
+    }
+  }
+}

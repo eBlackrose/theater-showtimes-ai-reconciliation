@@ -1,0 +1,41 @@
+{
+  "name": "01-new-drop",
+  "description": "The base sample: four room names only the agent can resolve.",
+  "user": "user-admin-avery",
+  "scopeTheaterId": "theater-downtown",
+  "file": "new-drop.csv",
+  "expect": {
+    "resolutions": [
+      {
+        "kind": "auditorium",
+        "raw": "Aud 1",
+        "outcome": "existing",
+        "target": "Auditorium 1"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium Two",
+        "outcome": "existing",
+        "target": "Auditorium 2"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium 1 (Laser)",
+        "outcome": "existing",
+        "target": "Auditorium 1"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium 5",
+        "outcome": "new"
+      }
+    ],
+    "counts": {
+      "unchanged": 4,
+      "add": 1,
+      "duplicate": 1,
+      "archive": 0,
+      "update": 0
+    }
+  }
+}

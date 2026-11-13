@@ -1,0 +1,75 @@
+{
+  "name": "02-ai-messy-drop",
+  "description": "Typos, roman numerals, an edition tag, a new film, a semantic duplicate and a moved showtime.",
+  "user": "user-admin-avery",
+  "scopeTheaterId": "theater-downtown",
+  "file": "ai-messy-drop.csv",
+  "expect": {
+    "resolutions": [
+      {
+        "kind": "movie",
+        "raw": "Spiderman Homecomming",
+        "outcome": "existing",
+        "target": "Spider-Man: Homecoming"
+      },
+      {
+        "kind": "movie",
+        "raw": "Inside Out II",
+        "outcome": "existing",
+        "target": "Inside Out 2"
+      },
+      {
+        "kind": "movie",
+        "raw": "Dune Pt. 2 (IMAX)",
+        "outcome": "existing",
+        "target": "Dune: Part Two"
+      },
+      {
+        "kind": "movie",
+        "raw": "Kung Fu Panda IV",
+        "outcome": "existing",
+        "target": "Kung Fu Panda 4"
+      },
+      {
+        "kind": "movie",
+        "raw": "Challengers",
+        "outcome": "new"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Aud. 1",
+        "outcome": "existing",
+        "target": "Auditorium 1"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Screen 2",
+        "outcome": "existing",
+        "target": "Auditorium 2"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium 1 - Laser",
+        "outcome": "existing",
+        "target": "Auditorium 1"
+      },
+      {
+        "kind": "auditorium",
+        "raw": "Auditorium 5",
+        "outcome": "new"
+      },
+      {
+        "kind": "reschedule",
+        "raw": "st-dt-002",
+        "outcome": "moved"
+      }
+    ],
+    "counts": {
+      "unchanged": 3,
+      "add": 3,
+      "reschedule": 1,
+      "duplicate": 1,
+      "archive": 0
+    }
+  }
+}

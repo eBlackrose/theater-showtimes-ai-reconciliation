@@ -1,79 +1,46 @@
 "use client";
 
+import { emptyFilters, type ShowtimeFilters } from "~/lib/hooks/useShowtimes";
+import type { FilterOptions } from "~/types/api";
+import { selectInput } from "./ui";
+
 interface FilterBarProps {
-  status: "active" | "inactive" | "archived" | "all";
-  format: string;
-  language: string;
-  rating: string;
-  auditorium: string;
-  movieStatus: string;
-  startDate: string;
-  endDate: string;
-  onFilterChange: (filters: {
-    status: "active" | "inactive" | "archived" | "all";
-    format: string;
-    language: string;
-    rating: string;
-    auditorium: string;
-    movieStatus: string;
-    startDate: string;
-    endDate: string;
-  }) => void;
-  availableFormats: string[];
-  availableLanguages: string[];
-  availableRatings: string[];
-  availableAuditoriums: string[];
-  availableMovieStatuses: string[];
+  filters: ShowtimeFilters;
+  options: FilterOptions;
+  onChange: (filters: ShowtimeFilters) => void;
 }
 
-export function FilterBar({
-  status,
-  format,
-  language,
-  rating,
-  auditorium,
-  movieStatus,
-  startDate,
-  endDate,
-  onFilterChange,
-  availableFormats,
-  availableLanguages,
-  availableRatings,
-  availableAuditoriums,
-  availableMovieStatuses,
-}: FilterBarProps) {
-  const handleChange = (field: string, value: string) => {
-    onFilterChange({
-      status,
-      format,
-      language,
-      rating,
-      auditorium,
-      movieStatus,
-      startDate,
-      endDate,
-      [field]: value,
-    });
-  };
+const SELECTS: {
+  field: "format" | "language" | "rating" | "movieStatus" | "auditorium";
+  label: string;
+  all: string;
+  options: keyof FilterOptions;
+}[] = [
+  { field: "format", label: "Format", all: "All Formats", options: "formats" },
+  { field: "language", label: "Language", all: "All Languages", options: "languages" },
+  { field: "rating", label: "Rating", all: "All Ratings", options: "ratings" },
+  { field: "movieStatus", label: "Movie Status", all: "All Statuses", options: "movieStatuses" },
+  { field: "auditorium", label: "Auditorium", all: "All Auditoriums", options: "auditoriums" },
+];
+
+export function FilterBar({ filters, options, onChange }: FilterBarProps) {
+  const set = (change: Partial<ShowtimeFilters>) => onChange({ ...filters, ...change });
+  const labelClass = "mb-1 block text-xs text-gray-400";
+  const inputClass = `w-full ${selectInput}`;
 
   return (
     <div className="mb-6 rounded-lg border border-gray-700 bg-gray-900 p-4">
-      <h3 className="mb-3 text-sm font-semibold uppercase text-gray-400">
-        Filters
-      </h3>
+      <h3 className="mb-3 text-sm font-semibold uppercase text-gray-400">Filters</h3>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Status Filter */}
         <div>
-          <label className="mb-1 block text-xs text-gray-400">Status</label>
+          <label htmlFor="filter-status" className={labelClass}>
+            Status
+          </label>
           <select
-            value={status}
-            onChange={(e) =>
-              handleChange(
-                "status",
-                e.target.value as "active" | "inactive" | "archived" | "all",
-              )
-            }
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            id="filter-status"
+            value={filters.status}
+            onChange={(e) => set({ status: e.target.value as ShowtimeFilters["status"] })}
+            className={inputClass}
           >
             <option value="all">All</option>
             <option value="active">Active</option>
@@ -82,130 +49,57 @@ export function FilterBar({
           </select>
         </div>
 
-        {/* Format Filter */}
-        <div>
-          <label className="mb-1 block text-xs text-gray-400">Format</label>
-          <select
-            value={format}
-            onChange={(e) => handleChange("format", e.target.value)}
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">All Formats</option>
-            {availableFormats.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-        </div>
+        {SELECTS.map((select) => (
+          <div key={select.field}>
+            <label htmlFor={`filter-${select.field}`} className={labelClass}>
+              {select.label}
+            </label>
+            <select
+              id={`filter-${select.field}`}
+              value={filters[select.field]}
+              onChange={(e) => set({ [select.field]: e.target.value })}
+              className={inputClass}
+            >
+              <option value="">{select.all}</option>
+              {options[select.options].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
 
-        {/* Language Filter */}
         <div>
-          <label className="mb-1 block text-xs text-gray-400">Language</label>
-          <select
-            value={language}
-            onChange={(e) => handleChange("language", e.target.value)}
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">All Languages</option>
-            {availableLanguages.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Rating Filter */}
-        <div>
-          <label className="mb-1 block text-xs text-gray-400">Rating</label>
-          <select
-            value={rating}
-            onChange={(e) => handleChange("rating", e.target.value)}
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">All Ratings</option>
-            {availableRatings.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Movie Status Filter */}
-        <div>
-          <label className="mb-1 block text-xs text-gray-400">
-            Movie Status
+          <label htmlFor="filter-start-date" className={labelClass}>
+            Start Date
           </label>
-          <select
-            value={movieStatus}
-            onChange={(e) => handleChange("movieStatus", e.target.value)}
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">All Statuses</option>
-            {availableMovieStatuses.map((statusOption) => (
-              <option key={statusOption} value={statusOption}>
-                {statusOption}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Auditorium Filter */}
-        <div>
-          <label className="mb-1 block text-xs text-gray-400">Auditorium</label>
-          <select
-            value={auditorium}
-            onChange={(e) => handleChange("auditorium", e.target.value)}
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">All Auditoriums</option>
-            {availableAuditoriums.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Start Date Filter */}
-        <div>
-          <label className="mb-1 block text-xs text-gray-400">Start Date</label>
           <input
+            id="filter-start-date"
             type="date"
-            value={startDate}
-            onChange={(e) => handleChange("startDate", e.target.value)}
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            value={filters.startDate}
+            onChange={(e) => set({ startDate: e.target.value })}
+            className={inputClass}
           />
         </div>
 
-        {/* End Date Filter */}
         <div>
-          <label className="mb-1 block text-xs text-gray-400">End Date</label>
+          <label htmlFor="filter-end-date" className={labelClass}>
+            End Date
+          </label>
           <input
+            id="filter-end-date"
             type="date"
-            value={endDate}
-            onChange={(e) => handleChange("endDate", e.target.value)}
-            className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            value={filters.endDate}
+            onChange={(e) => set({ endDate: e.target.value })}
+            className={inputClass}
           />
         </div>
 
-        {/* Clear Filters Button */}
         <div className="flex items-end">
           <button
-            onClick={() =>
-              onFilterChange({
-                status: "all",
-                format: "",
-                language: "",
-                rating: "",
-                auditorium: "",
-                movieStatus: "",
-                startDate: "",
-                endDate: "",
-              })
-            }
+            type="button"
+            onClick={() => onChange(emptyFilters)}
             className="w-full rounded-lg border border-gray-600 px-4 py-2 text-sm font-medium text-gray-300 transition hover:bg-gray-800"
           >
             Clear Filters

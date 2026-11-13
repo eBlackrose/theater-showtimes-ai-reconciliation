@@ -78,7 +78,7 @@ export function prepareFile(input: {
   const theaters = new Map<string, TheaterInfo>();
   const windows = new Map<string, TimeWindow | null>();
   for (const id of theaterIds) {
-    const theater = byId.get(id) as TheaterInfo;
+    const theater = byId.get(id)!;
     theaters.set(id, theater);
     windows.set(
       id,
@@ -155,7 +155,7 @@ export function planTheater(
   decisions: ReadonlyMap<string, Decision>,
 ): PlanResult {
   return derivePlan({
-    theater: file.theaters.get(theaterId) as TheaterInfo,
+    theater: file.theaters.get(theaterId)!,
     rows: file.rowsByTheater.get(theaterId) ?? [],
     resolver: new Resolver(state.catalog, resolutions),
     schedule: state.schedules.get(theaterId) ?? [],

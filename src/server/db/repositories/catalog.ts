@@ -11,7 +11,6 @@ import { normalizeKey } from "~/server/domain/normalize";
 import type {
   CatalogSnapshot,
   ExistingShowtime,
-  TheaterRooms,
   TimeWindow,
 } from "~/server/domain/types";
 import type { MovieStatus, ShowtimeStatus } from "~/types/assessment";
@@ -54,7 +53,7 @@ export async function loadCatalog(
     select id, theater_id, name, normalized_name from ${tbl(db, "auditoriums")}
     where theater_id = any(${input.theaterIds}::text[])`;
   for (const room of rooms) {
-    const theater = catalog.rooms.get(room.theater_id) as TheaterRooms;
+    const theater = catalog.rooms.get(room.theater_id)!;
     theater.byId.set(room.id, room.name);
     theater.byKey.set(room.normalized_name, room.id);
   }
